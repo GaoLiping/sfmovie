@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>SFMovie</title>
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no">
+    <meta charset="utf-8">
+<style>
+.top-box {
+    display: inline-block;
+    width: 100%;
+    height: 35px;
+    margin: 10px;
+    text-align: center;
+}
+.left-box {
+    display: inline-block;
+    width: 20%;
+    height: 600px;
+    margin: 10px;
+    border: 3px solid #73AD21;  
+}
+.right-box {
+    display: inline-block;
+    width: 72%;
+    height: 600px;
+    margin: 10px;
+}
+</style>
+        <link href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.1/themes/base/jquery-ui.css" rel="stylesheet" type="text/css"/>
+        <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
+        <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.1/jquery-ui.min.js"></script>  
+</head>
+<body>
+
+<h2>SF Movie</h2>
+
+<div class="top-box">
+<b>Search</b> <input type="text" id="txtSearch" class="autosuggest" />
+</div>
+<table style="width:100%; height:600px">
+<tr>
+<td style="width:20%" valign="top" id="leftbox">
+
+</td>
+<td id="map" style="width:80%" valign="top"></td>
+</tr>
+</table>
+    <script>
+      $(function () {
+        $(".autosuggest").autocomplete({
+            source: function(request, response) {
+                $.ajax({
+                    type: "POST",
+                    contentType: "application/json; charset=utf-8",
+                    url: "/sfmovie/api/search/autocomplete",
+                    data: "{\"rows\":5,\"q\":\""+document.getElementById('txtSearch').value+"\"}",
+                    dataType: "json",
+                    success: function (data) {
+                      var suggestions = [];
+                      $.each(data.results, function(i, result) {
+                        var category = result.name;
+                        if (result.value.values.length>0) {
+                          $.each(result.value.values, function(j, value) {
+                            suggestions.push(category+'|'+value);
+                          });
+                        }
+                      });
+                      response(suggestions);
+                    }
+                });
+            },
+            select: function(event, ui) {
+               var searchtext = ui.item.value;
+               var n = searchtext.indexOf("|");
+               var category = searchtext.substr(0,n);
+               var value = searchtext.substr(n+1);
+               this.value = "";
+               addFilter(category,value);
+               return false;
+            }
+        });
+      });
+    
+      var map;
+      var filters = [];
+      var addresses = [];
+      var geocoder;
+      var markers = [];
+      
+      function initMap() {
+        map = new google.maps.Map(document.getElementById('map'), {
+          zoom: 12,
+          center: {lat: 37.77493, lng: -122.41942}
+        });
+        geocoder = new google.maps.Geocoder();
+      }
+      
+      function addFilter(category, value) {
+        filters.push({category:category, value:value});
+        $("#leftbox").empty();
+        $.each(filters, function( i, filter ){
+          var d = "<button onclick=\"deleteFilter('"+i+"')\">x</button><span><b>"+filter.category+"</b></span> <span>"+filter.value+"</span><br/>";
+          $("#leftbox").append(d);
+        });
+        showAddresses();
+      }
+
+      function showAddresses() {
+        if (filters.length>0) {
+            var fqvalue = "[";
+            $.each(filters, function(i, filter) {
+              fqvalue = fqvalue + "{\"name\":\"" + filter.category + "\",\"value\":\"" + filter.value + "\"},";
+            });
+            fqvalue=fqvalue.slice(0,-1);
+            fqvalue=fqvalue+"]";
+            $.ajax({
+                type: "POST",
+                contentType: "application/json; charset=utf-8",
+                url: "/sfmovie/api/search/query",
+                data: "{\"start\":0,\"rows\":100,\"fq\":"+fqvalue+"}",
+                dataType: "json",
+                success: function (data) {
+                  var addresses = [];
+                  $.each(data.hits, function(i, hit) {
+                    $.each(hit.values, function(i, value) {
+                      if (value.name=='locations') {
+                        var address = value.value;
+                        if (address && address.length>0) {
+                          addresses.push(address);
+                        }
+                      }
+                    });
+                  });
+                  console.log(addresses);
+                  showMarkers(addresses);
+                }
+            });
+        } else {
+          clearMarkers();
+        }       
+      }
+      
+      function geocodeAddress(addresses, address, next) {
+        geocoder.geocode({'address': address+',san francisco'}, function(results, status) {
+          if (status === google.maps.GeocoderStatus.OK) {
+            map.setCenter(results[0].geometry.location);
+            var marker = new google.maps.Marker({
+              map: map,
+              position: results[0].geometry.location
+            });
+            markers.push(marker);
+          } else {
+            console.log('Geocode was not successful for the following reason: ' + status);
+            if (status === google.maps.GeocoderStatus.OVER_QUERY_LIMIT) {
+              nextAddress--;
+              delay=delay+10;
+            }
+          }
+          next(addresses);
+        });
+      }
+
+      // Sets the map on all markers in the array.
+      function setMapOnAll(map) {
+        $.each(markers, function (i, marker) {
+          marker.setMap(map);
+        });
+      }
+      
+      function clearMarkers() {
+        setMapOnAll(null);
+        markers = [];
+      }
+      
+      var delay = 100;
+      var nextAddress = 0;
+        
+      function showMarkers(addresses) {
+        delay = 100;
+        nextAddress = 0;
+        var address = addresses[nextAddress];
+        nextAddress++;
+        clearMarkers();
+        geocodeAddress(addresses, address, theNext);
+      }
+      
+      function theNext(addresses) {
+        if (nextAddress < addresses.length) {
+          setTimeout(function() {geocodeAddress(addresses,addresses[nextAddress],theNext);}, delay);
+          nextAddress++;
+        }
+      }
+      
+      function deleteFilter(i) {
+        filters.splice(i,1);
+        $("#leftbox").empty();
+        $.each(filters, function( i, filter ){
+          var d = "<button onclick=\"deleteFilter('"+i+"')\">x</button><span><b>"+filter.category+"</b></span> <span>"+filter.value+"</span><br/>";
+          $("#leftbox").append(d);
+        });
+        showAddresses();
+      }
+    </script>
+
+<script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAnhYzSjWFLR7UFMgq1gWXkECD1qVNjBqM&callback=initMap"></script>
+
+</body>
+</html>

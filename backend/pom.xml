@@ -1,0 +1,236 @@
+<?xml version="1.0"?>
+<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>dk.shx</groupId>
+    <artifactId>sfmovie</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
+    <relativePath>../pom.xml</relativePath>
+  </parent>
+  <artifactId>backend</artifactId>
+  <name>${project.artifactId}</name>
+  <packaging>war</packaging>
+  <properties>
+    <!-- build-->
+    <portal.jdk-version>1.8</portal.jdk-version>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    
+    <!-- encoding -->
+    <portal.encoding>UTF-8</portal.encoding>
+    <project.build.sourceEncoding>${portal.encoding}</project.build.sourceEncoding>
+    <project.build.encoding>${portal.encoding}</project.build.encoding>
+    <project.build.docencoding>${portal.encoding}</project.build.docencoding>
+    <project.build.charset>${portal.encoding}</project.build.charset>
+  </properties>
+  <dependencies>
+    <dependency>
+      <groupId>dk.shx</groupId>
+      <artifactId>core</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>dk.shx</groupId>
+      <artifactId>model</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>javax.servlet</groupId>
+      <artifactId>javax.servlet-api</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>javax.inject</groupId>
+      <artifactId>javax.inject</artifactId>
+    </dependency>
+    
+    <dependency>
+      <groupId>com.sun.jersey</groupId>
+      <artifactId>jersey-servlet</artifactId>
+    </dependency>
+    
+    <dependency>
+      <groupId>com.sun.jersey</groupId>
+      <artifactId>jersey-json</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.sun.jersey.contribs</groupId>
+      <artifactId>jersey-multipart</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.sun.jersey.contribs</groupId>
+      <artifactId>jersey-spring</artifactId>
+      <exclusions>
+        <exclusion>
+          <groupId>org.springframework</groupId>
+          <artifactId>spring</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.springframework</groupId>
+          <artifactId>spring-core</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.springframework</groupId>
+          <artifactId>spring-web</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.springframework</groupId>
+          <artifactId>spring-beans</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.springframework</groupId>
+          <artifactId>spring-context</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.springframework</groupId>
+          <artifactId>spring-aop</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-core</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-context</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-web</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-jdbc</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-tx</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.aspectj</groupId>
+      <artifactId>aspectjweaver</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-orm</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>log4j</groupId>
+      <artifactId>log4j</artifactId>
+    </dependency>
+    
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>3.8.1</version>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+    <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-war-plugin</artifactId>
+        <configuration>
+          <failOnMissingWebXml>true</failOnMissingWebXml>
+          <warName>sfmovie</warName>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <configuration>
+          <source>${portal.jdk-version}</source>
+          <target>${portal.jdk-version}</target>
+          <encoding>${project.build.encoding}</encoding>
+        </configuration>
+      </plugin>
+            <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-eclipse-plugin</artifactId>
+        <configuration>
+          <limitProjectReferencesToWorkspace>true</limitProjectReferencesToWorkspace>
+          <additionalProjectFacets>
+            <java>${portal.jdk-version}</java>
+            <jst.web>3.0</jst.web>
+          </additionalProjectFacets>
+          <additionalProjectnatures>
+            <projectnature>org.eclipse.jem.workbench.JavaEMFNature</projectnature>
+            <projectnature>org.eclipse.wst.common.modulecore.ModuleCoreNature</projectnature>
+            <projectnature>org.eclipse.wst.common.project.facet.core.nature</projectnature>
+            <projectnature>org.eclipse.m2e.core.maven2Nature</projectnature>
+            <projectnature>org.eclipse.jdt.core.javanature</projectnature>
+          </additionalProjectnatures>
+          <additionalBuildcommands>
+            <buildCommand>
+              <name>org.eclipse.wst.common.project.facet.core.builder</name>
+            </buildCommand>
+            <buildCommand>
+                <name>org.eclipse.m2e.core.maven2Builder</name>
+            </buildCommand>
+            <buildCommand>
+              <name>org.eclipse.wst.validation.validationbuilder</name>
+            </buildCommand>
+          </additionalBuildcommands>
+          <additionalConfig>
+            <file>
+              <name>.settings/org.eclipse.wst.common.project.facet.core.xml</name>
+              <content>
+                <![CDATA[<?xml version="1.0" encoding="UTF-8"?>
+                <faceted-project>
+                <fixed facet="jst.web" />
+                <fixed facet="java" />
+                <installed facet="jst.web" version="3.0" />
+                <installed facet="java" version="1.8" />
+                </faceted-project>]]>
+              </content>
+            </file>
+            <file>
+              <name>.classpath</name>
+              <content>
+            <![CDATA[<?xml version="1.0" encoding="UTF-8"?>
+              <classpath>
+              <classpathentry kind="src" including="**/*.java" path="src/main/java" />
+              <classpathentry kind="src" excluding="**/*.java" path="src/main/resources" />
+              
+              <!--
+              <classpathentry kind="src" including="**/*.java" output="target/test-classes" path="src/test/java" />
+              -->
+              <classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER" />
+              <classpathentry kind="con" path="org.eclipse.m2e.MAVEN2_CLASSPATH_CONTAINER" />
+              <classpathentry kind="output" path="target/classes" />
+              </classpath>]]>
+              </content>
+            </file>
+            <file>
+              <name>.settings/org.eclipse.wst.common.component</name>
+              <content>
+                <![CDATA[<?xml version="1.0" encoding="UTF-8"?>
+                  <project-modules id="moduleCoreId" project-version="1.7">
+                  <wb-module deploy-name="dsbackend">
+                      <wb-resource deploy-path="/" source-path="/src/main/webapp" />
+                      <wb-resource deploy-path="/WEB-INF/classes" source-path="/target/classes" />
+                      <property name="context-root" value="ds" />
+                  </wb-module>
+                </project-modules>]]>
+              </content>
+            </file>
+          </additionalConfig>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-failsafe-plugin</artifactId>
+        <version>2.9</version>
+        <executions>
+          <execution>
+            <goals>
+              <goal>integration-test</goal>
+              <goal>verify</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+</project>
