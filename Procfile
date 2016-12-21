@@ -1,1 +1,1 @@
-web:    java $JAVA_OPTS -jar target/dependency/webapp-runner.jar --port $PORT backend/target/sfmovie.war
+web:    java $JAVA_OPTS -jar lib/webapp-runner-8.5.5.2.jar --port $PORT backend/target/sfmovie.war
