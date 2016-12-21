@@ -212,3 +212,5 @@ example
 </pre>
 #frontend
 frontend contains only one html file - index.html. It can do autocomplete on all fields by calling autocomplete endpoint, and then it gets all the locations filtered by calling the query endpoint with selected filtering pairs. Locations will be shown on google maps. If the locations information is not in good quality, google maps cannot show them.
+
+It may have some delays when showing locations on google maps, it is done on purpose in order to avoid OVER_QUERY_LIMIT error of google's geocoder service.
